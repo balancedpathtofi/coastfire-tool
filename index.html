@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coast FIRE Calculator — Find Your Number</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0f0f0d;
+    --ink-2: #3a3a36;
+    --ink-3: #7a7a74;
+    --ink-4: #b8b8b0;
+    --paper: #f5f3ee;
+    --paper-2: #ede9e0;
+    --paper-3: #e4dfd4;
+    --teal: #0f6e56;
+    --teal-light: #e1f5ee;
+    --teal-mid: #1d9e75;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2rem;
+    background: var(--paper);
+    border-bottom: 1px solid var(--paper-3);
+  }
+  .nav-logo {
+    font-family: var(--serif); font-size: 1.1rem; color: var(--ink);
+    text-decoration: none; letter-spacing: .01em;
+  }
+  .nav-logo span { color: var(--teal); font-style: italic; }
+  .nav-cta {
+    font-size: 13px; font-weight: 500; color: var(--teal);
+    text-decoration: none; border-bottom: 1px solid var(--teal);
+    padding-bottom: 1px; transition: opacity .2s;
+  }
+  .nav-cta:hover { opacity: .7; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    justify-content: center; padding: 8rem 2rem 4rem;
+    max-width: 760px; margin: 0 auto;
+  }
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 500; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--teal);
+    margin-bottom: 1.5rem;
+    opacity: 0; animation: fadeUp .6s ease forwards;
+  }
+  .hero-title {
+    font-family: var(--serif); font-size: clamp(2.6rem, 6vw, 4.2rem);
+    line-height: 1.1; color: var(--ink); margin-bottom: 1.5rem;
+    opacity: 0; animation: fadeUp .6s ease .1s forwards;
+  }
+  .hero-title em { font-style: italic; color: var(--teal); }
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem); color: var(--ink-2);
+    line-height: 1.7; max-width: 560px; margin-bottom: 2.5rem;
+    font-weight: 300;
+    opacity: 0; animation: fadeUp .6s ease .2s forwards;
+  }
+  .hero-cta-row {
+    display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp .6s ease .3s forwards;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--ink); color: var(--paper);
+    font-family: var(--sans); font-size: 15px; font-weight: 500;
+    padding: 14px 28px; border-radius: 4px; border: none;
+    text-decoration: none; cursor: pointer;
+    transition: background .2s, transform .15s;
+  }
+  .btn-primary:hover { background: var(--teal); transform: translateY(-1px); }
+  .hero-note { font-size: 13px; color: var(--ink-3); }
+
+  /* SOCIAL PROOF STRIP */
+  .proof-strip {
+    background: var(--ink); color: var(--paper);
+    padding: 1.25rem 2rem;
+    display: flex; align-items: center; justify-content: center;
+    gap: 3rem; flex-wrap: wrap;
+  }
+  .proof-item { display: flex; align-items: center; gap: 10px; }
+  .proof-num { font-family: var(--serif); font-size: 1.5rem; color: var(--teal-mid); }
+  .proof-label { font-size: 12px; color: rgba(245,243,238,.6); max-width: 120px; line-height: 1.3; }
+
+  /* WHAT IS SECTION */
+  .section { padding: 6rem 2rem; max-width: 760px; margin: 0 auto; }
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--teal); margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 2.6rem);
+    line-height: 1.2; margin-bottom: 1.5rem; color: var(--ink);
+  }
+  .section-title em { font-style: italic; color: var(--teal); }
+  .body-text {
+    font-size: 1.05rem; color: var(--ink-2); line-height: 1.75;
+    font-weight: 300; margin-bottom: 1.25rem;
+  }
+
+  /* CALLOUT BLOCK */
+  .callout-block {
+    background: var(--ink); color: var(--paper);
+    border-radius: 6px; padding: 2rem 2.5rem; margin: 2.5rem 0;
+  }
+  .callout-block p {
+    font-family: var(--serif); font-size: 1.3rem; line-height: 1.5;
+    color: var(--paper); font-style: italic;
+  }
+  .callout-block p strong { font-style: normal; color: var(--teal-mid); font-family: var(--sans); font-size: 1rem; display: block; margin-top: .75rem; font-weight: 400; }
+
+  /* HOW IT WORKS */
+  .steps-grid { display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 2rem; }
+  .step-item {
+    display: grid; grid-template-columns: 48px 1fr;
+    gap: 1.25rem; padding: 1.75rem 0;
+    border-bottom: 1px solid var(--paper-3);
+  }
+  .step-item:last-child { border-bottom: none; }
+  .step-n {
+    font-family: var(--serif); font-size: 2rem; color: var(--ink-4);
+    line-height: 1; padding-top: 2px;
+  }
+  .step-content h3 { font-size: 1rem; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+  .step-content p { font-size: .95rem; color: var(--ink-3); line-height: 1.65; }
+
+  /* EXAMPLE OUTPUT */
+  .example-section {
+    background: var(--paper-2); padding: 5rem 2rem;
+  }
+  .example-inner { max-width: 760px; margin: 0 auto; }
+  .result-card {
+    background: var(--paper); border: 1px solid var(--paper-3);
+    border-radius: 8px; overflow: hidden; margin-top: 2rem;
+  }
+  .result-card-header {
+    background: var(--teal); padding: 1.25rem 1.75rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .result-card-header p { font-size: 13px; color: rgba(255,255,255,.75); }
+  .result-card-header strong { font-family: var(--serif); font-size: 1.5rem; color: #fff; display: block; }
+  .result-card-body { padding: 1.75rem; }
+  .result-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  .result-metric { }
+  .result-metric-label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+  .result-metric-val { font-family: var(--serif); font-size: 1.6rem; color: var(--ink); }
+  .result-metric-val.green { color: var(--teal); }
+  .result-interp {
+    background: var(--teal-light); border-radius: 4px;
+    padding: 1rem 1.25rem; font-size: .9rem; color: #0a5040; line-height: 1.65;
+    border-left: 3px solid var(--teal);
+  }
+
+  /* FOR WHO */
+  .who-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: var(--paper-3); border: 1px solid var(--paper-3); border-radius: 6px; overflow: hidden; margin-top: 2rem; }
+  .who-item { background: var(--paper); padding: 1.5rem; }
+  .who-item .who-role { font-size: .8rem; font-weight: 500; text-transform: uppercase; letter-spacing: .1em; color: var(--teal); margin-bottom: 6px; }
+  .who-item p { font-size: .9rem; color: var(--ink-3); line-height: 1.55; }
+
+  /* CALCULATOR SECTION */
+  .calc-section { padding: 6rem 2rem; }
+  .calc-inner { max-width: 640px; margin: 0 auto; }
+  .calc-card {
+    background: var(--paper); border: 1px solid var(--paper-3);
+    border-radius: 8px; overflow: hidden;
+  }
+  .calc-header {
+    background: var(--ink); padding: 1.75rem 2rem;
+  }
+  .calc-header h2 { font-family: var(--serif); font-size: 1.5rem; color: var(--paper); margin-bottom: 4px; }
+  .calc-header p { font-size: 13px; color: rgba(245,243,238,.6); }
+  .calc-body { padding: 2rem; }
+  .calc-progress { display: flex; gap: 4px; margin-bottom: 2rem; }
+  .calc-dot { height: 3px; flex: 1; background: var(--paper-3); border-radius: 3px; transition: background .3s; }
+  .calc-dot.active { background: var(--teal); }
+  .c-step { display: none; }
+  .c-step.active { display: block; }
+  .c-step-title { font-size: 1rem; font-weight: 500; color: var(--ink); margin-bottom: 1.25rem; }
+  .c-field { margin-bottom: 1.25rem; }
+  .c-field label { display: block; font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+  .c-field input[type=number], .c-field input[type=email] {
+    width: 100%; padding: 11px 14px; border: 1px solid var(--paper-3);
+    border-radius: 4px; font-family: var(--sans); font-size: 15px;
+    background: var(--paper); color: var(--ink); outline: none;
+    transition: border-color .2s;
+  }
+  .c-field input:focus { border-color: var(--teal); }
+  .c-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .c-slider-wrap { display: flex; align-items: center; gap: 12px; }
+  .c-slider-wrap input[type=range] {
+    flex: 1; -webkit-appearance: none; height: 3px;
+    background: var(--paper-3); border-radius: 3px; outline: none;
+    cursor: pointer;
+  }
+  .c-slider-wrap input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--teal); border: 2px solid var(--paper);
+    box-shadow: 0 0 0 1px var(--teal);
+  }
+  .c-slider-val { font-size: 14px; font-weight: 500; color: var(--ink); min-width: 32px; text-align: right; }
+  .c-hint { font-size: 11px; color: var(--ink-4); margin-top: 4px; }
+  .c-btn-row { display: flex; gap: 8px; margin-top: 1.5rem; }
+  .c-btn {
+    padding: 11px 22px; border-radius: 4px; font-family: var(--sans);
+    font-size: 14px; font-weight: 500; cursor: pointer; border: 1px solid var(--paper-3);
+    background: var(--paper); color: var(--ink); transition: all .15s;
+  }
+  .c-btn:hover { background: var(--paper-2); }
+  .c-btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .c-btn.primary:hover { background: var(--teal); border-color: var(--teal); }
+
+  /* RESULTS */
+  .r-hero {
+    padding: 1.25rem; border-radius: 6px; margin-bottom: 1.25rem;
+    border: 1px solid var(--paper-3); background: var(--paper-2);
+  }
+  .r-hero.hit { background: var(--teal-light); border-color: #5dcaa5; }
+  .r-badge { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-4); margin-bottom: 6px; }
+  .r-badge.hit { color: var(--teal); }
+  .r-headline { font-family: var(--serif); font-size: 1.25rem; color: var(--ink); margin-bottom: 5px; }
+  .r-headline.hit { color: #085041; }
+  .r-sub { font-size: .9rem; color: var(--ink-3); line-height: 1.6; }
+  .r-sub.hit { color: var(--teal); }
+  .r-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+  .r-metric { background: var(--paper-2); border-radius: 4px; padding: .75rem 1rem; }
+  .r-metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); margin-bottom: 4px; }
+  .r-metric-val { font-family: var(--serif); font-size: 1.3rem; color: var(--ink); }
+  .r-metric-val.green { color: var(--teal); }
+  .r-bar-wrap { margin-bottom: 1.25rem; }
+  .r-bar-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-3); margin-bottom: 6px; }
+  .r-bar-track { background: var(--paper-3); border-radius: 20px; height: 6px; overflow: hidden; }
+  .r-bar-fill { height: 6px; border-radius: 20px; background: var(--teal-mid); transition: width .8s cubic-bezier(.16,1,.3,1); }
+  .r-interp { font-size: .875rem; color: var(--ink-2); line-height: 1.7; background: var(--paper-2); border-radius: 4px; padding: 1rem; margin-bottom: 1.25rem; }
+  .r-interp strong { color: var(--ink); font-weight: 500; }
+  .r-table { width: 100%; border-collapse: collapse; font-size: .875rem; margin-bottom: 1rem; }
+  .r-table th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); padding: 6px 0; border-bottom: 1px solid var(--paper-3); }
+  .r-table td { padding: 8px 0; border-bottom: 1px solid var(--paper-3); color: var(--ink-2); }
+  .r-table td:last-child { text-align: right; font-weight: 500; color: var(--ink); }
+  .r-reset { font-size: 12px; color: var(--ink-4); cursor: pointer; text-decoration: underline; background: none; border: none; font-family: var(--sans); margin-top: .5rem; }
+  .r-reset:hover { color: var(--ink-2); }
+
+  /* GATE */
+  .gate-title { font-size: 1rem; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+  .gate-sub { font-size: .875rem; color: var(--ink-3); line-height: 1.55; margin-bottom: 1.25rem; }
+  .gate-email-row { display: flex; gap: 8px; }
+  .gate-email-row input { flex: 1; }
+  .gate-fine { font-size: 11px; color: var(--ink-4); margin-top: 8px; }
+
+  /* WHO IS THIS FOR */
+  .testimonial {
+    background: var(--paper-2); border-radius: 6px;
+    padding: 1.5rem 1.75rem; margin-top: 1.5rem;
+    border-left: 3px solid var(--teal);
+  }
+  .testimonial p { font-family: var(--serif); font-size: 1.1rem; color: var(--ink); line-height: 1.55; font-style: italic; margin-bottom: .75rem; }
+  .testimonial cite { font-size: .8rem; color: var(--ink-3); font-style: normal; }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); padding: 3rem 2rem;
+    text-align: center;
+  }
+  footer p { font-size: .875rem; color: rgba(245,243,238,.4); }
+  footer a { color: rgba(245,243,238,.4); text-decoration: none; }
+  footer .footer-logo { font-family: var(--serif); font-size: 1.2rem; color: var(--paper); margin-bottom: .75rem; }
+  footer .footer-logo span { color: var(--teal-mid); font-style: italic; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    nav { padding: .875rem 1.25rem; }
+    .hero { padding: 6rem 1.25rem 3rem; }
+    .section { padding: 4rem 1.25rem; }
+    .calc-section { padding: 4rem 1.25rem; }
+    .calc-body { padding: 1.25rem; }
+    .c-field-row { grid-template-columns: 1fr; }
+    .r-metrics { grid-template-columns: 1fr 1fr; }
+    .result-metrics { grid-template-columns: 1fr 1fr; }
+    .proof-strip { gap: 1.5rem; padding: 1.25rem; }
+    .who-grid { grid-template-columns: 1fr 1fr; }
+    .gate-email-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">coast<span>fire</span></a>
+  <a href="#calculator" class="nav-cta">Calculate my number →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">Free calculator for high earners</p>
+  <h1 class="hero-title">Find out if you're already <em>free</em> to stop sprinting.</h1>
+  <p class="hero-sub">Your Coast FIRE number is the point where your investments will grow into a full retirement on their own — no more contributions needed. You might have already hit it without knowing.</p>
+  <div class="hero-cta-row">
+    <a href="#calculator" class="btn-primary">Calculate my number</a>
+    <span class="hero-note">Takes 90 seconds. Free.</span>
+  </div>
+</section>
+
+<!-- PROOF STRIP -->
+<div class="proof-strip">
+  <div class="proof-item">
+    <span class="proof-num">$3M</span>
+    <span class="proof-label">approx. retirement target to hit top 10% of US retirees</span>
+  </div>
+  <div class="proof-item">
+    <span class="proof-num">1</span>
+    <span class="proof-label">number that changes how you make every career decision</span>
+  </div>
+</div>
+
+<!-- WHAT IS COAST FIRE -->
+<section class="section">
+  <p class="section-label">What is Coast FIRE?</p>
+  <h2 class="section-title">Retirement handled.<br><em>Career optional.</em></h2>
+  <p class="body-text">Coast FIRE isn't about quitting your job. It's about reaching the point where compound interest will grow your existing investments into a full retirement — without another dollar of contributions.</p>
+  <p class="body-text">There's a specific number — your Coast number — where the math is done. Everything you earn after that is yours to use however you want. A lower-stress role. A sabbatical. A career bet you couldn't afford to take before.</p>
+
+  <div class="callout-block">
+    <p>"Coast FIRE allows you to fund your future self early so your current self can afford to breathe."<strong>— For high-achieving professionals who've done everything right and still feel trapped.</strong></p>
+  </div>
+
+  <p class="body-text">Most high earners are optimizing for a finish line they've never clearly defined. Coast FIRE gives you a number. A real, specific number. And for people who've been aggressively saving since their late 20s, that number is often a lot closer than it feels.</p>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" style="padding-top:0">
+  <p class="section-label">How it works</p>
+  <h2 class="section-title">Three inputs.<br><em>One number that changes everything.</em></h2>
+  <div class="steps-grid">
+    <div class="step-item">
+      <div class="step-n">1</div>
+      <div class="step-content">
+        <h3>Enter your basics</h3>
+        <p>Your age, target retirement age, current investment balance, and how much you want to spend in retirement. Takes 60 seconds.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-n">2</div>
+      <div class="step-content">
+        <h3>Get your Coast number instantly</h3>
+        <p>We calculate the dollar amount where your investments will compound into full retirement on their own — and whether you've already crossed that line.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-n">3</div>
+      <div class="step-content">
+        <h3>See what it means for your career</h3>
+        <p>Not just the math — a plain-English breakdown of what your number actually unlocks. What income you need. What roles become possible. What changes now.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXAMPLE OUTPUT -->
+<div class="example-section">
+  <div class="example-inner">
+    <p class="section-label">Example output</p>
+    <h2 class="section-title">This is what your<br><em>results look like.</em></h2>
+    <p class="body-text" style="margin-bottom:0">A 37-year-old attorney, $340k current balance, wants $130k/year in retirement at 65.</p>
+    <div class="result-card">
+      <div class="result-card-header">
+        <div>
+          <p>Coast FIRE status</p>
+          <strong>You've already crossed the line.</strong>
+        </div>
+        <div style="text-align:right">
+          <p>Coast number</p>
+          <strong>$313,000</strong>
+        </div>
+      </div>
+      <div class="result-card-body">
+        <div class="result-metrics">
+          <div class="result-metric">
+            <div class="result-metric-label">Your balance</div>
+            <div class="result-metric-val green">$340,000</div>
+          </div>
+          <div class="result-metric">
+            <div class="result-metric-label">Coast number</div>
+            <div class="result-metric-val">$313,000</div>
+          </div>
+          <div class="result-metric">
+            <div class="result-metric-label">Full FIRE target</div>
+            <div class="result-metric-val">$3,250,000</div>
+          </div>
+        </div>
+        <div class="result-interp">
+          Your $340,000 will grow to approximately <strong>$3.25M by age 65</strong> at a 7% average return — enough to support $130,000/year in retirement without touching the principal. You could even have a surplus of <strong>$27,000</strong> above your Coast number.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DISCLAIMER -->
+<div style="max-width:760px;margin:0 auto;padding:0 2rem 3rem">
+  <p style="font-size:11px;color:var(--ink-4);line-height:1.7;border-top:1px solid var(--paper-3);padding-top:1.25rem"><strong style="font-weight:500;color:var(--ink-3)">Disclaimer:</strong> The calculations provided by this tool are for educational and illustrative purposes only. All calculations and projections are hypothetical and do not represent actual financial results or guarantee future performance. This tool does not provide financial, tax, legal, or investment advice. The estimates generated depend on the specific inputs provided by the user and assumptions such as inflation rates, investment returns, and market conditions, which cannot be predicted with absolute certainty. Past performance is no guarantee of future results. All investments carry risk, including the potential loss of principal. You should always consult with a qualified financial or tax professional regarding your personal situation before making any major financial or retirement decisions. The Balanced Path to FI and its owners assume no liability for any financial losses or damages incurred by using this calculator.</p>
+</div>
+
+<!-- FOR WHO -->
+<section class="section">
+  <p class="section-label">Who this is for</p>
+  <h2 class="section-title">Built for people who earn a lot<br>and still feel <em>stuck.</em></h2>
+  <p class="body-text">This isn't for the lean FIRE crowd living on $35k a year. It's for high earners who've been doing everything right — maxing accounts, saving aggressively, building real wealth — and still feel like they can't afford to make a different choice.</p>
+  <div class="testimonial">
+    <p>"I ran my number and realized I'd hit Coast FIRE at 35 — two years before I found the courage to pull the trigger and make a career shift. Two years of grinding I didn't have to do. Now I know what I'm actually optimizing for."</p>
+    <cite>— Corporate attorney</cite>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="calc-section" id="calculator">
+  <div class="calc-inner">
+    <div style="text-align:center;margin-bottom:2rem">
+      <p class="section-label" style="justify-content:center;display:flex">The calculator</p>
+      <h2 class="section-title" style="font-size:clamp(1.6rem,3.5vw,2.2rem)">Find your Coast FIRE number.</h2>
+    </div>
+    <div class="calc-card">
+      <div class="calc-header">
+        <h2>Coast FIRE Calculator</h2>
+        <p>Free · Takes 90 seconds · Results sent to your inbox</p>
+      </div>
+      <div class="calc-body">
+        <div class="calc-progress">
+          <div class="calc-dot active" id="dot1"></div>
+          <div class="calc-dot" id="dot2"></div>
+          <div class="calc-dot" id="dot3"></div>
+          <div class="calc-dot" id="dot4"></div>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="c-step active" id="cs1">
+          <p class="c-step-title">Step 1 — Your basics</p>
+          <div class="c-field-row">
+            <div class="c-field">
+              <label>Current age</label>
+              <input type="number" id="c-age" value="35" min="20" max="70">
+            </div>
+            <div class="c-field">
+              <label>Target retirement age</label>
+              <input type="number" id="c-retire" value="65" min="40" max="80">
+            </div>
+          </div>
+          <div class="c-field">
+            <label>Expected annual return</label>
+            <div class="c-slider-wrap">
+              <input type="range" id="c-rate" min="4" max="12" value="7" step="1">
+              <span class="c-slider-val" id="c-rate-val">7%</span>
+            </div>
+            <p class="c-hint">7% is a conservative historical average for a diversified index portfolio.</p>
+          </div>
+          <div class="c-btn-row">
+            <button class="c-btn primary" onclick="cGoTo(2)">Next →</button>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="c-step" id="cs2">
+          <p class="c-step-title">Step 2 — Your numbers</p>
+          <div class="c-field">
+            <label>Current investment balance</label>
+            <input type="number" id="c-balance" value="300000" placeholder="300000">
+            <p class="c-hint">Include 401k, IRA, brokerage — anything invested for retirement.</p>
+          </div>
+          <div class="c-field">
+            <label>Annual retirement spending goal</label>
+            <input type="number" id="c-spend" value="120000" placeholder="120000">
+            <p class="c-hint">How much do you want to spend per year in retirement? Be honest. Don't forget about healthcare and taxes!</p>
+          </div>
+          <div class="c-btn-row">
+            <button class="c-btn" onclick="cGoTo(1)">← Back</button>
+            <button class="c-btn primary" onclick="cGoTo(3)">Next →</button>
+          </div>
+        </div>
+
+        <!-- Step 3: gate -->
+        <div class="c-step" id="cs3">
+          <p class="c-gate-title gate-title">Step 3 — Get your results</p>
+          <p class="gate-sub">Your Coast FIRE number is ready. Enter your email and we'll send you the full breakdown — your number, what it means, and what it unlocks for your career.</p>
+          <script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="5d7618b1-81fc-49d0-8d98-f3fe3cd26688"></script>
+          <p style="margin-top:1rem;font-size:12px;color:var(--ink-4)">After subscribing, click below to see your results.</p>
+          <div class="c-btn-row" style="margin-top:.75rem">
+            <button class="c-btn" onclick="cGoTo(2)">← Back</button>
+            <button class="c-btn primary" onclick="cGoTo(4)">See my number →</button>
+          </div>
+        </div>
+
+        <!-- Step 4: results -->
+        <div class="c-step" id="cs4">
+          <div class="r-hero" id="r-hero">
+            <p class="r-badge" id="r-badge"></p>
+            <p class="r-headline" id="r-headline"></p>
+            <p class="r-sub" id="r-sub"></p>
+          </div>
+          <div class="r-metrics">
+            <div class="r-metric"><div class="r-metric-label">Coast number</div><div class="r-metric-val" id="r-coast"></div></div>
+            <div class="r-metric"><div class="r-metric-label">Your balance</div><div class="r-metric-val" id="r-bal"></div></div>
+            <div class="r-metric"><div class="r-metric-label">Full FIRE target</div><div class="r-metric-val" id="r-fire"></div></div>
+          </div>
+          <div class="r-bar-wrap">
+            <div class="r-bar-labels"><span>Progress to Coast number</span><span id="r-pct"></span></div>
+            <div class="r-bar-track"><div class="r-bar-fill" id="r-bar" style="width:0%"></div></div>
+          </div>
+          <div class="r-interp" id="r-interp"></div>
+          <div id="r-gap"></div>
+          <p style="font-size:11px;color:var(--ink-4);margin-bottom:.75rem">Full breakdown sent to your inbox. Check your email.</p>
+          <button class="r-reset" onclick="cGoTo(1)">Recalculate with different numbers</button>
+          <p style="font-size:10px;color:var(--ink-4);line-height:1.6;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--paper-3)"><strong style="font-weight:500">Disclaimer:</strong> The calculations provided by this tool are for educational and illustrative purposes only. All calculations and projections are hypothetical and do not represent actual financial results or guarantee future performance. This tool does not provide financial, tax, legal, or investment advice. The estimates generated depend on the specific inputs provided by the user and assumptions such as inflation rates, investment returns, and market conditions, which cannot be predicted with absolute certainty. Past performance is no guarantee of future results. All investments carry risk, including the potential loss of principal. You should always consult with a qualified financial or tax professional regarding your personal situation before making any major financial or retirement decisions. The Balanced Path to FI and its owners assume no liability for any financial losses or damages incurred by using this calculator.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p class="footer-logo">coast<span>fire</span></p>
+  <p>Helping high earners find the number that changes everything.</p>
+  <p style="margin-top:.5rem"><a href="#">Privacy</a> · <a href="#">Terms</a></p>
+</footer>
+
+<script>
+document.getElementById('c-rate').addEventListener('input', function() {
+  document.getElementById('c-rate-val').textContent = this.value + '%';
+});
+
+function cGoTo(n) {
+  if (n === 4) computeResults();
+  [1,2,3,4].forEach(i => {
+    document.getElementById('cs'+i).classList.toggle('active', i===n);
+    const dot = document.getElementById('dot'+i);
+    if (dot) dot.classList.toggle('active', i <= n);
+  });
+  if (n > 1) document.getElementById('calculator').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
+
+function computeResults() {
+  const age = parseInt(document.getElementById('c-age').value) || 35;
+  const retire = parseInt(document.getElementById('c-retire').value) || 65;
+  const rate = (parseInt(document.getElementById('c-rate').value) || 7) / 100;
+  const balance = parseInt(document.getElementById('c-balance').value) || 0;
+  const spend = parseInt(document.getElementById('c-spend').value) || 120000;
+
+  const years = Math.max(retire - age, 1);
+  const fireNum = spend * 25;
+  const coastNum = fireNum / Math.pow(1 + rate, years);
+  const pct = Math.min((balance / coastNum) * 100, 150);
+  const hit = balance >= coastNum;
+  const gap = Math.max(coastNum - balance, 0);
+
+  document.getElementById('r-coast').textContent = fmt(coastNum);
+  document.getElementById('r-bal').className = 'r-metric-val' + (hit ? ' green' : '');
+  document.getElementById('r-bal').textContent = fmt(balance);
+  document.getElementById('r-fire').textContent = fmt(fireNum);
+  document.getElementById('r-pct').textContent = Math.round(pct) + '%';
+  setTimeout(() => { document.getElementById('r-bar').style.width = Math.min(pct,100).toFixed(0)+'%'; }, 120);
+
+  const hero = document.getElementById('r-hero');
+  const badge = document.getElementById('r-badge');
+  const hl = document.getElementById('r-headline');
+  const sub = document.getElementById('r-sub');
+
+  if (hit) {
+    hero.className = 'r-hero hit';
+    badge.className = 'r-badge hit'; badge.textContent = 'You\'ve already coasted';
+    hl.className = 'r-headline hit'; hl.textContent = 'Your retirement is mathematically handled.';
+    sub.className = 'r-sub hit';
+    sub.textContent = 'Your investments will compound into a full retirement by age ' + retire + ' without another dollar of contributions. Everything you earn from here is yours.';
+    document.getElementById('r-interp').innerHTML = 'At ' + Math.round(rate*100) + '% average annual return, your <strong>' + fmt(balance) + '</strong> grows to approximately <strong>' + fmt(fireNum) + '</strong> by age ' + retire + ' — enough to support <strong>' + fmt(spend) + '/year</strong> in retirement. You have a surplus of <strong>' + fmt(balance - coastNum) + '</strong> above your Coast number.';
+    document.getElementById('r-gap').innerHTML = '';
+  } else {
+    hero.className = 'r-hero';
+    badge.className = 'r-badge'; badge.textContent = 'Not there yet — here\'s the path';
+    hl.className = 'r-headline'; hl.textContent = 'You\'re ' + Math.round(100 - pct) + '% away from your Coast number.';
+    sub.className = 'r-sub';
+    sub.textContent = 'Once you hit ' + fmt(coastNum) + ', compound interest handles the rest. Here\'s how long it takes at different savings rates.';
+    document.getElementById('r-interp').innerHTML = 'You need <strong>' + fmt(coastNum) + '</strong> invested today for the math to work on its own. You\'re currently <strong>' + fmt(gap) + '</strong> away. At ' + Math.round(rate*100) + '% returns, here\'s your timeline:';
+
+    const rates = [2000,3000,5000,8000];
+    let rows = rates.map(m => {
+      let bal = balance; let months = 0;
+      while (bal < coastNum && months < 600) { bal = bal*(1+rate/12)+m; months++; }
+      const yrs = Math.floor(months/12); const mos = months%12;
+      return '<tr><td>Save <strong>' + '$'+m.toLocaleString() + '/mo</strong></td><td>' + (yrs>0?yrs+'y ':'') + mos + 'mo — age ' + (age+Math.floor(months/12)) + '</td></tr>';
+    }).join('');
+    document.getElementById('r-gap').innerHTML = '<table class="r-table"><thead><tr><th>Monthly savings</th><th>Time to Coast FIRE</th></tr></thead><tbody>' + rows + '</tbody></table><p style="font-size:11px;color:var(--ink-4)">Assumes ' + Math.round(rate*100) + '% annual return compounded monthly on balance + contributions.</p>';
+  }
+}
+</script>
+</body>
+</html>
